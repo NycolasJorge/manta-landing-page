@@ -7,85 +7,13 @@ import { DateRangePicker } from '@/components/DateRangePicker';
 import { LogOut, Users, BarChart3, TrendingUp, Baby, Heart, MapPin, DollarSign, Shield, Clock, Sparkles, Hand, Palette, Scissors, X, HelpCircle, Filter, Phone, Copy } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
-
-// Mock data - replace with real data from database later
-const mockResults = {
-  totalResponses: 0,
-  whatsappContacts: [
-    // Mock contacts - replace with real data from database
-    // { id: 1, whatsapp: "(11) 99999-9999", submittedAt: "2024-01-15T10:30:00Z", interest: "sim" },
-  ],
-  questions: [
-    {
-      id: 1,
-      title: "Você está grávida ou no período puérpero?",
-      type: "radio",
-      responses: [
-        { value: "gravida", label: "Grávida", count: 0, percentage: 0 },
-        { value: "pos-parto", label: "Pós-parto", count: 0, percentage: 0 }
-      ]
-    },
-    {
-      id: 2,
-      title: "Quais serviços você gostaria de encontrar no Manta?",
-      type: "checkbox",
-      responses: [
-        { value: "baba", label: "Babá", count: 0, percentage: 0 },
-        { value: "manicure", label: "Manicure", count: 0, percentage: 0 },
-        { value: "maquiadora", label: "Maquiadora", count: 0, percentage: 0 },
-        { value: "cabeleireira", label: "Cabeleireira", count: 0, percentage: 0 },
-        { value: "others", label: "Outros", count: 0, percentage: 0 }
-      ]
-    },
-    {
-      id: 3,
-      title: "Quando precisa desses serviços hoje, como resolve?",
-      type: "radio",
-      responses: [
-        { value: "salao", label: "Vou até o salão/profissional", count: 0, percentage: 0 },
-        { value: "conhecido", label: "Chamo alguém conhecido em casa", count: 0, percentage: 0 },
-        { value: "nao-contrato", label: "Não costumo contratar", count: 0, percentage: 0 }
-      ]
-    },
-    {
-      id: 4,
-      title: "O que é mais importante para você ao escolher um serviço?",
-      type: "radio",
-      responses: [
-        { value: "preco", label: "Preço acessível", count: 0, percentage: 0 },
-        { value: "seguranca", label: "Segurança e confiança", count: 0, percentage: 0 },
-        { value: "facilidade", label: "Facilidade para agendar", count: 0, percentage: 0 },
-        { value: "variedade", label: "Variedade de serviços", count: 0, percentage: 0 }
-      ]
-    },
-    {
-      id: 5,
-      title: "De que forma o Manta poderia ajudar mais você e seu bebê no dia a dia?",
-      type: "checkbox",
-      responses: [
-        { value: "descanso", label: "Mais tempo para descanso e autocuidado", count: 0, percentage: 0 },
-        { value: "apoio", label: "Apoio prático nos cuidados com o bebê", count: 0, percentage: 0 },
-        { value: "profissionais", label: "Facilidade para encontrar profissionais de confiança", count: 0, percentage: 0 },
-        { value: "others", label: "Outros", count: 0, percentage: 0 }
-      ]
-    },
-    {
-      id: 6,
-      title: "Você teria interesse em usar um aplicativo como o Manta?",
-      type: "radio",
-      responses: [
-        { value: "sim", label: "Sim", count: 0, percentage: 0 },
-        { value: "talvez", label: "Talvez", count: 0, percentage: 0 },
-        { value: "nao", label: "Não", count: 0, percentage: 0 }
-      ]
-    }
-  ]
-};
+import { useSurveyData } from '@/hooks/useSurveyData';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const { data: surveyData, loading, error } = useSurveyData(dateRange);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -109,7 +37,7 @@ const AdminDashboard = () => {
   };
 
   const exportContacts = () => {
-    if (mockResults.whatsappContacts.length === 0) {
+    if (!surveyData || surveyData.whatsappContacts.length === 0) {
       toast({
         title: "Nenhum contato",
         description: "Não há contatos para exportar",
@@ -119,7 +47,7 @@ const AdminDashboard = () => {
     }
 
     const csv = "WhatsApp,Data de Envio,Interesse\n" +
-      mockResults.whatsappContacts.map(contact => 
+      surveyData.whatsappContacts.map(contact => 
         `${contact.whatsapp},${new Date(contact.submittedAt).toLocaleDateString('pt-BR')},${contact.interest}`
       ).join('\n');
 
@@ -220,7 +148,7 @@ const AdminDashboard = () => {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{mockResults.totalResponses}</div>
+              <div className="text-2xl font-bold text-primary">{surveyData?.totalResponses || 0}</div>
               <p className="text-xs text-muted-foreground">
                 {dateRange?.from && dateRange?.to 
                   ? `Período selecionado` 
@@ -236,7 +164,7 @@ const AdminDashboard = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">0%</div>
+              <div className="text-2xl font-bold text-primary">{surveyData?.interestRate || 0}%</div>
               <p className="text-xs text-muted-foreground">
                 Usuárias interessadas no app
               </p>
@@ -249,7 +177,7 @@ const AdminDashboard = () => {
               <Phone className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{mockResults.whatsappContacts.length}</div>
+              <div className="text-2xl font-bold text-primary">{surveyData?.whatsappContacts.length || 0}</div>
               <p className="text-xs text-muted-foreground">
                 {dateRange?.from && dateRange?.to 
                   ? `Período selecionado` 
@@ -275,13 +203,17 @@ const AdminDashboard = () => {
             <Button 
               onClick={exportContacts}
               variant="outline"
-              disabled={mockResults.whatsappContacts.length === 0}
+              disabled={!surveyData || surveyData.whatsappContacts.length === 0}
             >
               Exportar CSV
             </Button>
           </CardHeader>
           <CardContent>
-            {mockResults.whatsappContacts.length === 0 ? (
+            {loading ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Carregando dados...</p>
+              </div>
+            ) : !surveyData || surveyData.whatsappContacts.length === 0 ? (
               <div className="text-center py-8">
                 <Phone className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
@@ -293,7 +225,7 @@ const AdminDashboard = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {mockResults.whatsappContacts.map((contact) => (
+                {surveyData.whatsappContacts.map((contact) => (
                   <div key={contact.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-primary/10 rounded-full">
@@ -333,7 +265,7 @@ const AdminDashboard = () => {
 
         {/* Questions Results */}
         <div className="grid gap-6">
-          {mockResults.questions.map((question) => (
+          {surveyData?.questions.map((question) => (
             <Card key={question.id}>
               <CardHeader>
                 <CardTitle className="text-lg">{question.title}</CardTitle>

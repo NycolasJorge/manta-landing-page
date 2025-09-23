@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      survey_responses: {
+        Row: {
+          created_at: string
+          current_solution: string
+          help_needs: string[]
+          id: string
+          interest: string
+          others_help: string | null
+          others_service: string | null
+          priorities: string
+          services: string[]
+          status: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          current_solution: string
+          help_needs?: string[]
+          id?: string
+          interest: string
+          others_help?: string | null
+          others_service?: string | null
+          priorities: string
+          services?: string[]
+          status: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          current_solution?: string
+          help_needs?: string[]
+          id?: string
+          interest?: string
+          others_help?: string | null
+          others_service?: string | null
+          priorities?: string
+          services?: string[]
+          status?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

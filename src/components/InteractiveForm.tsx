@@ -6,6 +6,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Baby, Heart, ArrowLeft, ArrowRight, Sparkles, Shield, Clock, Star, Hand, Palette, Scissors, MapPin, X, DollarSign, HelpCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface FormData {
   status: string;
@@ -109,12 +111,63 @@ const InteractiveForm = () => {
   const currentQuestion = questions[currentStep];
   const totalSteps = questions.length;
 
-  const handleNext = () => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNext = async () => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      console.log('Form completed:', formData);
-      // Handle form submission
+      await submitForm();
+    }
+  };
+
+  const submitForm = async () => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('survey_responses')
+        .insert({
+          status: formData.status,
+          services: formData.services,
+          others_service: formData.othersService || null,
+          current_solution: formData.currentSolution,
+          priorities: formData.priorities,
+          help_needs: formData.helpNeeds,
+          others_help: formData.othersHelp || null,
+          interest: formData.interest,
+          whatsapp: formData.whatsapp
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Obrigada!",
+        description: "Suas respostas foram enviadas com sucesso. Te avisaremos quando o app estiver pronto!",
+      });
+
+      // Reset form
+      setFormData({
+        status: '',
+        services: [],
+        currentSolution: '',
+        priorities: '',
+        helpNeeds: [],
+        interest: '',
+        whatsapp: '',
+        othersService: '',
+        othersHelp: ''
+      });
+      setCurrentStep(0);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Erro",
+        description: "Houve um erro ao enviar suas respostas. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -354,16 +407,16 @@ const InteractiveForm = () => {
             
             <Button 
               onClick={handleNext}
-              disabled={!isStepValid()}
+              disabled={!isStepValid() || isSubmitting}
               size="lg"
               className="px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105"
               style={{
-                background: isStepValid() 
+                background: isStepValid() && !isSubmitting
                   ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' 
                   : undefined
               }}
             >
-              {currentStep === totalSteps - 1 ? 'Finalizar' : 'Próximo'}
+              {isSubmitting ? 'Enviando...' : currentStep === totalSteps - 1 ? 'Finalizar' : 'Próximo'}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
