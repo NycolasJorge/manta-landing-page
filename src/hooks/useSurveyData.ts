@@ -46,6 +46,28 @@ export const useSurveyData = (dateRange?: { from?: Date; to?: Date }) => {
   const fetchSurveyData = async () => {
     try {
       setLoading(true);
+      
+      // Verificar se está autenticado
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setError('Usuário não autenticado');
+        setLoading(false);
+        return;
+      }
+
+      // Verificar se é admin autorizado
+      const { data: adminUser, error: adminError } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('email', session.user.email)
+        .single();
+
+      if (adminError || !adminUser) {
+        setError('Acesso não autorizado');
+        setLoading(false);
+        return;
+      }
+
       let query = supabase.from('survey_responses').select('*');
 
       if (dateRange?.from) {

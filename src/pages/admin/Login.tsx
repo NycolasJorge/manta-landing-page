@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Lock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -20,6 +21,26 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Verificar se já está logado
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Verificar se é admin autorizado
+        const { data: adminUser } = await supabase
+          .from('admin_users')
+          .select('email')
+          .eq('email', session.user.email)
+          .single();
+        
+        if (adminUser) {
+          navigate('/admin/dashboard');
+        }
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,18 +53,51 @@ const AdminLogin = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
-    // Mock authentication - replace with real authentication later
-    if (values.email === 'admin@manta.com' && values.password === 'admin123') {
-      localStorage.setItem('admin_logged_in', 'true');
+    try {
+      // Autenticação real com Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (authError) {
+        toast({
+          title: 'Erro de autenticação',
+          description: authError.message,
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Verificar se o usuário é um admin autorizado
+      const { data: adminUser, error: adminError } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('email', authData.user.email)
+        .single();
+
+      if (adminError || !adminUser) {
+        // Fazer logout se não é admin autorizado
+        await supabase.auth.signOut();
+        toast({
+          title: 'Acesso negado',
+          description: 'Você não tem permissão para acessar esta área',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
+
       toast({
         title: 'Login realizado com sucesso',
         description: 'Bem-vindo ao painel administrativo',
       });
       navigate('/admin/dashboard');
-    } else {
+    } catch (error: any) {
       toast({
         title: 'Erro de autenticação',
-        description: 'Email ou senha incorretos',
+        description: 'Ocorreu um erro inesperado',
         variant: 'destructive',
       });
     }

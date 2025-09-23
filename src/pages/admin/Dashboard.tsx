@@ -8,6 +8,7 @@ import { LogOut, Users, BarChart3, TrendingUp, Baby, Heart, MapPin, DollarSign, 
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
 import { useSurveyData } from '@/hooks/useSurveyData';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -16,15 +17,62 @@ const AdminDashboard = () => {
   const { data: surveyData, loading, error } = useSurveyData(dateRange);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const isLoggedIn = localStorage.getItem('admin_logged_in');
-    if (!isLoggedIn) {
-      navigate('/admin/login');
-    }
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error || !session) {
+        if (isMounted) navigate('/admin/login');
+        return;
+      }
+
+      // Verificar se é admin autorizado
+      const { data: adminUser, error: adminError } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('email', session.user.email)
+        .single();
+
+      if (adminError || !adminUser) {
+        await supabase.auth.signOut();
+        if (isMounted) navigate('/admin/login');
+        return;
+      }
+    };
+
+    checkAuth();
+
+    // Monitorar mudanças na autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        if (isMounted) navigate('/admin/login');
+        return;
+      }
+
+      if (event === 'SIGNED_IN') {
+        // Verificar se é admin autorizado
+        const { data: adminUser, error: adminError } = await supabase
+          .from('admin_users')
+          .select('email')
+          .eq('email', session.user.email)
+          .single();
+
+        if (adminError || !adminUser) {
+          await supabase.auth.signOut();
+          if (isMounted) navigate('/admin/login');
+        }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_logged_in');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/admin/login');
   };
 
