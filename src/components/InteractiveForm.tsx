@@ -338,22 +338,66 @@ const InteractiveForm = () => {
 
     if (currentQuestion.type === 'whatsapp') {
       return (
-        <div className="max-w-md mx-auto">
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="text-center">
-                  <Heart className="w-12 h-12 mx-auto mb-4 text-primary" />
-                  <p className="text-muted-foreground mb-4">
-                    Digite seu WhatsApp para ser notificada quando o app estiver disponível
+        <div className="max-w-lg mx-auto">
+          <Card className="border-2 border-primary/20 shadow-xl">
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                {/* Icon and main message */}
+                <div className="text-center space-y-4">
+                  <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-primary to-primary/60 shadow-lg">
+                    <Sparkles className="w-10 h-10 text-white" />
+                  </div>
+                  
+                  <h5 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                    Ganhe Acesso Exclusivo!
+                  </h5>
+                  
+                  <div className="space-y-3 text-left bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-4 border border-primary/10">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 p-1.5 rounded-full bg-primary/20">
+                        <Star className="w-4 h-4 text-primary" />
+                      </div>
+                      <p className="text-sm text-foreground/90 flex-1">
+                        <span className="font-semibold">Ebook exclusivo</span> sobre bem-estar na gestação e pós-parto antes do lançamento
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 p-1.5 rounded-full bg-primary/20">
+                        <Heart className="w-4 h-4 text-primary" />
+                      </div>
+                      <p className="text-sm text-foreground/90 flex-1">
+                        A <span className="font-semibold">Manta está em desenvolvimento</span> e será lançada em breve
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 p-1.5 rounded-full bg-primary/20">
+                        <Baby className="w-4 h-4 text-primary" />
+                      </div>
+                      <p className="text-sm text-foreground/90 flex-1">
+                        Seja a primeira a saber quando o app estiver disponível
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Input field */}
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp" className="text-base font-semibold text-center block">
+                    Seu número de WhatsApp:
+                  </Label>
+                  <Input
+                    id="whatsapp"
+                    placeholder="(11) 99999-9999"
+                    value={formData.whatsapp}
+                    onChange={(e) => handleInputChange('whatsapp', e.target.value)}
+                    className="text-center text-lg h-12 border-2 focus:border-primary"
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    Seus dados estão seguros e não serão compartilhados
                   </p>
                 </div>
-                <Input
-                  placeholder="(11) 99999-9999"
-                  value={formData.whatsapp}
-                  onChange={(e) => handleInputChange('whatsapp', e.target.value)}
-                  className="text-center text-lg"
-                />
               </div>
             </CardContent>
           </Card>
