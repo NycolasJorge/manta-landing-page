@@ -1,38 +1,31 @@
-import { useState } from 'react';
-import YouTube from 'react-youtube';
+import { useState, useEffect, useRef } from 'react';
+import Player from '@vimeo/player';
 import mantaLogo from '@/assets/manta-logo.png';
 
 const Header = () => {
   const [hasFinished, setHasFinished] = useState(false);
   const [showEbookMessage, setShowEbookMessage] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const handleVideoPlay = () => {
-    setShowEbookMessage(false);
-  };
+  useEffect(() => {
+    if (iframeRef.current) {
+      const player = new Player(iframeRef.current);
+      
+      player.on('play', () => {
+        setShowEbookMessage(false);
+      });
 
-  const handleVideoEnd = () => {
-    setHasFinished(true);
-  };
+      player.on('ended', () => {
+        setHasFinished(true);
+      });
+    }
+  }, []);
 
   const scrollToForm = () => {
     const formElement = document.getElementById('interactive-form');
     if (formElement) {
       formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  };
-
-  const opts = {
-    playerVars: {
-      autoplay: 0,
-      controls: 1,
-      modestbranding: 1,
-      rel: 0,
-      showinfo: 0,
-      iv_load_policy: 3,
-      fs: 1,
-      cc_load_policy: 0,
-      disablekb: 0,
-    },
   };
 
   return (
@@ -59,8 +52,8 @@ const Header = () => {
           </p>
           
           {/* Video Section */}
-          <div className="relative mb-8 w-full lg:max-w-4xl mx-auto -mx-4 px-0 lg:mx-auto lg:px-0">
-            <div className="relative rounded-2xl overflow-hidden shadow-card">
+          <div className="relative mb-8 w-full lg:max-w-4xl lg:mx-auto">
+            <div className="relative lg:rounded-2xl overflow-hidden shadow-card">
               {/* Gift Badge - Before Video Ends */}
               {showEbookMessage && (
                 <div className="absolute top-4 left-4 right-4 lg:top-6 lg:left-6 lg:right-6 flex justify-center z-10">
@@ -86,13 +79,13 @@ const Header = () => {
               )}
               
               <div className="aspect-video">
-                <YouTube
-                  videoId="MCI4dSqOAvc"
-                  opts={opts}
-                  onPlay={handleVideoPlay}
-                  onEnd={handleVideoEnd}
+                <iframe
+                  ref={iframeRef}
+                  src="https://player.vimeo.com/video/1123090970?badge=0&autopause=0&player_id=0&app_id=58479"
                   className="w-full h-full"
-                  iframeClassName="w-full h-full"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+                  title="Vimeo video"
                 />
               </div>
             </div>
