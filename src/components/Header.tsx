@@ -13,6 +13,9 @@ const Header = () => {
       
       player.on('play', () => {
         setShowEbookMessage(false);
+        player.requestFullscreen().catch((error) => {
+          console.log('Fullscreen request failed:', error);
+        });
       });
 
       player.on('ended', () => {
