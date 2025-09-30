@@ -29,7 +29,7 @@ const Header = () => {
       rel: 0,
       showinfo: 0,
       iv_load_policy: 3,
-      fs: 0,
+      fs: 1,
       cc_load_policy: 0,
       disablekb: 0,
     },
