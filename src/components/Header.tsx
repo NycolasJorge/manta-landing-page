@@ -6,9 +6,12 @@ const Header = () => {
   const [hasFinished, setHasFinished] = useState(false);
   const [showEbookMessage, setShowEbookMessage] = useState(true);
 
+  const handleVideoPlay = () => {
+    setShowEbookMessage(false);
+  };
+
   const handleVideoEnd = () => {
     setHasFinished(true);
-    setShowEbookMessage(false);
   };
 
   const scrollToForm = () => {
@@ -61,7 +64,7 @@ const Header = () => {
               {/* Gift Badge - Before Video Ends */}
               {showEbookMessage && (
                 <div className="absolute top-4 left-4 right-4 lg:top-6 lg:left-6 lg:right-6 flex justify-center z-10">
-                  <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 py-2 lg:px-6 lg:py-3 rounded-full shadow-lg backdrop-blur-sm border-2 border-white/20 animate-pulse">
+                  <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 py-2 lg:px-6 lg:py-3 rounded-full shadow-lg backdrop-blur-sm border-2 border-white/20">
                     <p className="text-sm lg:text-base font-bold text-center flex items-center gap-2">
                       <span className="text-lg lg:text-xl">🎁</span>
                       <span>Assista até o final e ganhe um Ebook Grátis!</span>
@@ -73,7 +76,7 @@ const Header = () => {
               {/* Gift Badge - After Video Ends */}
               {hasFinished && (
                 <div className="absolute top-4 left-4 right-4 lg:top-6 lg:left-6 lg:right-6 flex justify-center z-10">
-                  <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 py-2 lg:px-6 lg:py-3 rounded-full shadow-lg backdrop-blur-sm border-2 border-white/20 animate-pulse">
+                  <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 py-2 lg:px-6 lg:py-3 rounded-full shadow-lg backdrop-blur-sm border-2 border-white/20">
                     <p className="text-sm lg:text-base font-bold text-center flex items-center gap-2">
                       <span className="text-lg lg:text-xl">🎁</span>
                       <span>Responda o questionário abaixo e ganhe seu Ebook Grátis!</span>
@@ -86,6 +89,7 @@ const Header = () => {
                 <YouTube
                   videoId="MCI4dSqOAvc"
                   opts={opts}
+                  onPlay={handleVideoPlay}
                   onEnd={handleVideoEnd}
                   className="w-full h-full"
                   iframeClassName="w-full h-full"
