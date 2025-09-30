@@ -71,10 +71,14 @@ export const useSurveyData = (dateRange?: { from?: Date; to?: Date }) => {
       let query = supabase.from('survey_responses').select('*');
 
       if (dateRange?.from) {
-        query = query.gte('created_at', dateRange.from.toISOString());
+        const fromDate = new Date(dateRange.from);
+        fromDate.setHours(0, 0, 0, 0);
+        query = query.gte('created_at', fromDate.toISOString());
       }
       if (dateRange?.to) {
-        query = query.lte('created_at', dateRange.to.toISOString());
+        const toDate = new Date(dateRange.to);
+        toDate.setHours(23, 59, 59, 999);
+        query = query.lte('created_at', toDate.toISOString());
       }
 
       const { data: responses, error } = await query.order('created_at', { ascending: false });

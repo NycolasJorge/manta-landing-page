@@ -14,30 +14,49 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { data: surveyData, loading, error } = useSurveyData(dateRange);
 
   useEffect(() => {
     let isMounted = true;
 
     const checkAuth = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error || !session) {
-        if (isMounted) navigate('/admin/login');
-        return;
-      }
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error || !session) {
+          if (isMounted) {
+            setIsAuthenticated(false);
+            navigate('/admin/login');
+          }
+          return;
+        }
 
-      // Verificar se é admin autorizado
-      const { data: adminUser, error: adminError } = await supabase
-        .from('admin_users')
-        .select('email')
-        .eq('email', session.user.email)
-        .single();
+        // Verificar se é admin autorizado
+        const { data: adminUser, error: adminError } = await supabase
+          .from('admin_users')
+          .select('email')
+          .eq('email', session.user.email)
+          .single();
 
-      if (adminError || !adminUser) {
-        await supabase.auth.signOut();
-        if (isMounted) navigate('/admin/login');
-        return;
+        if (adminError || !adminUser) {
+          await supabase.auth.signOut();
+          if (isMounted) {
+            setIsAuthenticated(false);
+            navigate('/admin/login');
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setIsAuthenticated(true);
+        }
+      } catch (err) {
+        console.error('Auth check error:', err);
+        if (isMounted) {
+          setIsAuthenticated(false);
+          navigate('/admin/login');
+        }
       }
     };
 
@@ -46,7 +65,10 @@ const AdminDashboard = () => {
     // Monitorar mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
-        if (isMounted) navigate('/admin/login');
+        if (isMounted) {
+          setIsAuthenticated(false);
+          navigate('/admin/login');
+        }
         return;
       }
 
@@ -60,7 +82,12 @@ const AdminDashboard = () => {
 
         if (adminError || !adminUser) {
           await supabase.auth.signOut();
-          if (isMounted) navigate('/admin/login');
+          if (isMounted) {
+            setIsAuthenticated(false);
+            navigate('/admin/login');
+          }
+        } else if (isMounted) {
+          setIsAuthenticated(true);
         }
       }
     });
@@ -138,6 +165,16 @@ const AdminDashboard = () => {
     
     return iconMap[value] || BarChart3;
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

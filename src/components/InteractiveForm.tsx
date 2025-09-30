@@ -339,62 +339,63 @@ const InteractiveForm = () => {
     if (currentQuestion.type === 'whatsapp') {
       return (
         <div className="max-w-lg mx-auto">
-          <Card className="border-2 border-primary/20 shadow-xl">
+          <Card className="border-2 border-primary/20 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-500">
             <CardContent className="p-8">
               <div className="space-y-6">
                 {/* Icon and main message */}
                 <div className="text-center space-y-4">
-                  <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-primary to-primary/60 shadow-lg">
-                    <Sparkles className="w-10 h-10 text-white" />
+                  <div className="inline-flex p-5 rounded-full bg-gradient-to-br from-primary via-primary/80 to-primary/60 shadow-xl animate-pulse">
+                    <Sparkles className="w-12 h-12 text-white" />
                   </div>
                   
-                  <h5 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                    Ganhe Acesso Exclusivo!
-                  </h5>
+                  <h3 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent animate-in slide-in-from-bottom-3 duration-700">
+                    🎁 Ganhe Acesso Exclusivo!
+                  </h3>
                   
-                  <div className="space-y-3 text-left bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-4 border border-primary/10">
+                  <div className="space-y-3 text-left bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl p-6 border-2 border-primary/20 shadow-lg animate-in slide-in-from-bottom-4 duration-700 delay-150">
                     <div className="flex items-start gap-3">
-                      <div className="mt-1 p-1.5 rounded-full bg-primary/20">
-                        <Star className="w-4 h-4 text-primary" />
+                      <div className="mt-1 p-2 rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-md">
+                        <Star className="w-5 h-5 text-white" />
                       </div>
-                      <p className="text-sm text-foreground/90 flex-1">
-                        <span className="font-semibold">Ebook exclusivo</span> sobre bem-estar na gestação e pós-parto antes do lançamento
+                      <p className="text-base text-foreground font-medium flex-1 leading-relaxed">
+                        <span className="font-bold text-primary text-lg">Ebook exclusivo</span> sobre bem-estar na gestação e pós-parto <span className="font-semibold">antes do lançamento!</span>
                       </p>
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <div className="mt-1 p-1.5 rounded-full bg-primary/20">
-                        <Heart className="w-4 h-4 text-primary" />
+                      <div className="mt-1 p-2 rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-md">
+                        <Heart className="w-5 h-5 text-white" />
                       </div>
-                      <p className="text-sm text-foreground/90 flex-1">
-                        A <span className="font-semibold">Manta está em desenvolvimento</span> e será lançada em breve
+                      <p className="text-base text-foreground font-medium flex-1 leading-relaxed">
+                        A <span className="font-bold text-primary">Manta está em desenvolvimento</span> e será lançada em breve
                       </p>
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <div className="mt-1 p-1.5 rounded-full bg-primary/20">
-                        <Baby className="w-4 h-4 text-primary" />
+                      <div className="mt-1 p-2 rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-md">
+                        <Baby className="w-5 h-5 text-white" />
                       </div>
-                      <p className="text-sm text-foreground/90 flex-1">
-                        Seja a primeira a saber quando o app estiver disponível
+                      <p className="text-base text-foreground font-medium flex-1 leading-relaxed">
+                        Seja a <span className="font-bold text-primary">primeira a saber</span> quando o app estiver disponível
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Input field */}
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp" className="text-base font-semibold text-center block">
-                    Seu número de WhatsApp:
+                <div className="space-y-3 animate-in slide-in-from-bottom-5 duration-700 delay-300">
+                  <Label htmlFor="whatsapp" className="text-lg font-bold text-center block text-foreground">
+                    📱 Seu número de WhatsApp:
                   </Label>
                   <Input
                     id="whatsapp"
                     placeholder="(11) 99999-9999"
                     value={formData.whatsapp}
                     onChange={(e) => handleInputChange('whatsapp', e.target.value)}
-                    className="text-center text-lg h-12 border-2 focus:border-primary"
+                    className="text-center text-xl h-14 border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 font-semibold transition-all duration-300"
                   />
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+                    <Shield className="w-3 h-3" />
                     Seus dados estão seguros e não serão compartilhados
                   </p>
                 </div>
