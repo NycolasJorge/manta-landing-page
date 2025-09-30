@@ -59,7 +59,7 @@ const Header = () => {
           </p>
           
           {/* Video Section */}
-          <div className="relative mb-8 max-w-3xl lg:max-w-2xl mx-auto">
+          <div className="relative mb-8 w-full lg:max-w-4xl mx-auto -mx-4 px-0 lg:mx-auto lg:px-0">
             <div className="relative rounded-2xl overflow-hidden shadow-card">
               {/* Gift Badge - Before Video Ends */}
               {showEbookMessage && (
