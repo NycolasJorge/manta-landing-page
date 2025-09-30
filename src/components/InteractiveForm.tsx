@@ -413,9 +413,17 @@ const InteractiveForm = () => {
     <>
       <section id="interactive-form" className="bg-background px-4 py-16">
         <div className="container mx-auto max-w-2xl">
-          <h3 className="text-3xl lg:text-4xl font-bold text-center text-foreground mb-12">
-            Queremos ouvir você!
-          </h3>
+          <div className="text-center mb-12 space-y-4">
+            <h3 className="text-3xl lg:text-4xl font-bold text-foreground">
+              Queremos ouvir você!
+            </h3>
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 px-6 py-3 rounded-full border-2 border-primary/30 shadow-lg animate-pulse">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <p className="text-lg font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
+                Responda o questionário e ganhe um eBook exclusivo GRÁTIS! 🎁
+              </p>
+            </div>
+          </div>
         
         {/* Progress bar */}
         <div className="mb-8">
